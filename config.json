@@ -1,0 +1,23 @@
+{
+  "server": {
+    "port": 8181,
+    "host": "0.0.0.0",
+    "corsOrigins": ["*"]
+  },
+  "printers": {
+    "defaultBarcodePrinter": "Virtual_Barcode_Printer",
+    "defaultFormat": "tspl",
+    "defaultThermalPrinter": "",
+    "throttleDelayMs": 80,
+    "labelWidthMm": 50,
+    "labelHeightMm": 30,
+    "labelGapMm": 2
+  },
+  "lis": {
+    "labName": "Laboratorium SehatLink",
+    "includePatientRm": true,
+    "includeLabNo": true,
+    "includeDateTime": true,
+    "barcodeType": "128"
+  }
+}

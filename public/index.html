@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SehatLink Auto-Print Monitor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="brand">
+        <h1>SehatLink Auto-Print Monitor</h1>
+        <p>Service &amp; Monitoring Antrean Cetak Lokal</p>
+      </div>
+      <div style="display: flex; gap: 6px; align-items: center;">
+        <button id="btn-restart-service" class="btn btn-secondary" title="Restart & Segarkan Service">
+          Restart Service
+        </button>
+        <button id="btn-clear-queue" class="btn btn-secondary" title="Hapus antrean spooler yang macet">
+          Bersihkan Antrean
+        </button>
+        <span id="connection-badge" class="badge online">
+          <span class="dot"></span>
+          <span id="connection-text">Online (8181)</span>
+        </span>
+      </div>
+    </header>
+
+    <!-- STATUS ALERT -->
+    <div id="alert-status" class="alert-box"></div>
+
+    <!-- STATS OVERVIEW -->
+    <div class="stats-grid">
+      <div class="stat-box">
+        <div class="stat-label">Port Service</div>
+        <div class="stat-value" id="stat-port">8181 (Aktif)</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Selesai</div>
+        <div class="stat-value" id="stat-total">0 Cetakan</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Status Spooler</div>
+        <div class="stat-value" style="color: #059669;" id="stat-spooler">Normal</div>
+      </div>
+    </div>
+
+    <!-- LIVE ACTIVITY MONITOR FEED -->
+    <div class="card">
+      <div class="card-title">
+        <span>Aktivitas Cetak Real-Time</span>
+        <span id="log-count" class="badge" style="background: #f1f5f9; color: var(--text-muted); font-size: 10px;">0 Pekerjaan</span>
+      </div>
+
+      <div id="log-feed" class="log-feed-container">
+        <div style="color: var(--text-muted); text-align: center; padding: 40px 0; font-size: 12px;">
+          Menunggu aktivitas cetak dari aplikasi SehatLink...
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="sehatlink-printer.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

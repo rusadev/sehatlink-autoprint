@@ -1,0 +1,31 @@
+{
+  "name": "sehatlink-autoprint",
+  "version": "1.0.0",
+  "description": "SehatLink LIS Auto-Print & Multi-Barcode Service (QZ Tray Alternative) with GUI Setup",
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node tests/test-templates.js && node tests/test-queue.js"
+  },
+  "keywords": [
+    "sehatlink",
+    "lis",
+    "autoprint",
+    "qz-tray",
+    "barcode",
+    "specimen-label",
+    "xprinter",
+    "zebra",
+    "tspl",
+    "zpl"
+  ],
+  "author": "SehatLink Dev Team",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  }
+}
