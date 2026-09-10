@@ -63,9 +63,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     logFeed.insertBefore(item, logFeed.firstChild);
   }
 
+  const currentPort = window.location.port || '18181';
+  const statPort = document.getElementById('stat-port');
+  if (statPort) statPort.textContent = `${currentPort} (Aktif)`;
+
   printerSdk.on('connected', () => {
     connectionBadge.className = 'badge online';
-    connectionText.textContent = 'Online (8181)';
+    connectionText.textContent = `Online (${currentPort})`;
     statSpooler.textContent = 'Normal';
     statSpooler.style.color = '#059669';
   });

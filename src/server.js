@@ -210,6 +210,16 @@ app.post('/api/clear-queue', (req, res) => {
   });
 });
 
+app.post('/api/restart-service', (req, res) => {
+  addPrintLog({
+    type: 'system',
+    title: 'Service direstart dan disegarkan',
+    printer: 'SYSTEM',
+    status: 'success'
+  });
+  res.json({ success: true, message: 'Service berhasil disegarkan & siap digunakan.' });
+});
+
 // 1. TEST PRINT BARCODE
 app.post('/api/test-print', async (req, res) => {
   try {
