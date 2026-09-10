@@ -427,7 +427,7 @@ process.on('unhandledRejection', (reason, promise) => {
 
 // Start Server with Fallback
 const currentCfg = getConfig();
-const DEFAULT_PORT = parseInt(process.env.PORT || currentCfg.server?.port || 8181, 10);
+const DEFAULT_PORT = parseInt(process.env.PORT || currentCfg.server?.port || 18181, 10);
 const DEFAULT_HOST = currentCfg.server?.host || '127.0.0.1';
 
 function startServer(portToTry, hostToTry) {
