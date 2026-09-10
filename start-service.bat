@@ -25,6 +25,6 @@ if not exist "node_modules" (
 )
 
 echo [INFO] Menjalankan service auto-print pada port 8181...
-start "" "http://localhost:8181"
+echo [INFO] Monitor browser akan terbuka otomatis setelah service siap.
 npm start
 pause

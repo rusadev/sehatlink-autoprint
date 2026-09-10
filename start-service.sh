@@ -22,10 +22,4 @@ if [ ! -d "node_modules" ]; then
 fi
 
 echo "[INFO] Menjalankan service auto-print pada port 8181..."
-if which open > /dev/null; then
-    open "http://localhost:8181" &
-elif which xdg-open > /dev/null; then
-    xdg-open "http://localhost:8181" &
-fi
-
 npm start

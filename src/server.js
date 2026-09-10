@@ -21,7 +21,17 @@ const printQueue = new PrintQueue({
   throttleDelayMs: config.printers?.throttleDelayMs || 80
 });
 
-// Middleware
+// Middleware & PNA (Private Network Access for Live HTTPS Web Apps)
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+  res.setHeader('Access-Control-Allow-Private-Network', 'true');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(204);
+  }
+  next();
+});
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -398,7 +408,7 @@ function openDesktopAppWindow(url) {
     if (platform === 'darwin') {
       exec(`open -na "Google Chrome" --args --app="${url}" || open "${url}"`, () => {});
     } else if (platform === 'win32') {
-      exec(`start chrome --app="${url}" || start msedge --app="${url}" || start "${url}"`, () => {});
+      exec(`start chrome --app="${url}" || start msedge --app="${url}" || start "" "${url}"`, () => {});
     } else {
       exec(`google-chrome --app="${url}" || xdg-open "${url}"`, () => {});
     }
@@ -425,12 +435,12 @@ server.listen(PORT, HOST, () => {
 ===========================================================
 🏥 SehatLink LIS Auto-Print Service (v1.0.0)
 ===========================================================
-📡 HTTP REST API:   http://localhost:${PORT}
-⚡ WebSocket API:   ws://localhost:${PORT}
-🖥️ GUI Live Window: http://localhost:${PORT}
+📡 HTTP REST API:   http://127.0.0.1:${PORT}
+⚡ WebSocket API:   ws://127.0.0.1:${PORT}
+🖥️ GUI Live Window: http://127.0.0.1:${PORT}
 ===========================================================
 Ready for 2-Printer Setup: 1. Barcode Label & 2. Cetak Hasil!
 `);
 
-  openDesktopAppWindow(`http://localhost:${PORT}`);
+  openDesktopAppWindow(`http://127.0.0.1:${PORT}`);
 });
