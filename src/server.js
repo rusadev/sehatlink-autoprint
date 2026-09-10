@@ -425,32 +425,45 @@ process.on('unhandledRejection', (reason, promise) => {
   console.error('\n❌ [CRITICAL UNHANDLED REJECTION]:', reason);
 });
 
-// Error handling for EADDRINUSE
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.error(`\n❌ [ERROR] Port ${err.port} sudah digunakan oleh proses lain.`);
-    console.error(`💡 Solusi: Jalankan start-service.bat kembali untuk membersihkan port otomatis.\n`);
-  } else {
-    console.error('Server error:', err);
-  }
-});
-
-// Start Server
+// Start Server with Fallback
 const currentCfg = getConfig();
-const PORT = process.env.PORT || currentCfg.server?.port || 8181;
-const HOST = currentCfg.server?.host || '0.0.0.0';
+const DEFAULT_PORT = parseInt(process.env.PORT || currentCfg.server?.port || 8181, 10);
+const DEFAULT_HOST = currentCfg.server?.host || '127.0.0.1';
 
-server.listen(PORT, HOST, () => {
-  console.log(`
+function startServer(portToTry, hostToTry) {
+  server.once('error', (err) => {
+    if (err.code === 'EACCES' || err.code === 'EADDRINUSE') {
+      if (portToTry === 8181) {
+        console.warn(`\n⚠️ Port 8181 dibatasi/diblokir oleh Windows (${err.code}).`);
+        console.warn(`🔄 Mencoba fallback otomatis ke Port 8182 pada ${hostToTry}...\n`);
+        startServer(8182, hostToTry);
+        return;
+      }
+      console.error(`\n❌ [ERROR] Gagal membuka port ${portToTry}: ${err.message}`);
+      if (err.code === 'EACCES') {
+        console.error(`💡 Tips Windows: Buka CMD sebagai Administrator lalu jalankan:`);
+        console.error(`   net stop winnat`);
+        console.error(`   net start winnat\n`);
+      }
+    } else {
+      console.error('Server error:', err);
+    }
+  });
+
+  server.listen(portToTry, hostToTry, () => {
+    console.log(`
 ===========================================================
 🏥 SehatLink LIS Auto-Print Service (v1.0.0)
 ===========================================================
-📡 HTTP REST API:   http://127.0.0.1:${PORT}
-⚡ WebSocket API:   ws://127.0.0.1:${PORT}
-🖥️ GUI Live Window: http://127.0.0.1:${PORT}
+📡 HTTP REST API:   http://127.0.0.1:${portToTry}
+⚡ WebSocket API:   ws://127.0.0.1:${portToTry}
+🖥️ GUI Live Window: http://127.0.0.1:${portToTry}
 ===========================================================
 Ready for 2-Printer Setup: 1. Barcode Label & 2. Cetak Hasil!
 `);
 
-  openDesktopAppWindow(`http://127.0.0.1:${PORT}`);
-});
+    openDesktopAppWindow(`http://127.0.0.1:${portToTry}`);
+  });
+}
+
+startServer(DEFAULT_PORT, DEFAULT_HOST);
