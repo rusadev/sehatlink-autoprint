@@ -406,20 +406,30 @@ function openDesktopAppWindow(url) {
 
   setTimeout(() => {
     if (platform === 'darwin') {
-      exec(`open -na "Google Chrome" --args --app="${url}" || open "${url}"`, () => {});
+      exec(`open "${url}"`, () => {});
     } else if (platform === 'win32') {
-      exec(`start chrome --app="${url}" || start msedge --app="${url}" || start "" "${url}"`, () => {});
+      exec(`start "" "${url}"`, () => {});
     } else {
-      exec(`google-chrome --app="${url}" || xdg-open "${url}"`, () => {});
+      exec(`xdg-open "${url}"`, () => {});
     }
-  }, 500);
+  }, 1000);
 }
+
+// Global Exception Handlers (Prevent Silent Crash on Windows)
+process.on('uncaughtException', (err) => {
+  console.error('\n❌ [CRITICAL UNCAUGHT EXCEPTION]:', err.message);
+  console.error(err.stack);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('\n❌ [CRITICAL UNHANDLED REJECTION]:', reason);
+});
 
 // Error handling for EADDRINUSE
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
     console.error(`\n❌ [ERROR] Port ${err.port} sudah digunakan oleh proses lain.`);
-    console.error(`💡 Solusi: Jalankan: lsof -ti:${err.port} | xargs kill -9\n`);
+    console.error(`💡 Solusi: Jalankan start-service.bat kembali untuk membersihkan port otomatis.\n`);
   } else {
     console.error('Server error:', err);
   }
