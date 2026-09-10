@@ -9,36 +9,40 @@ function getSystemPrinters() {
     const platform = os.platform();
 
     if (platform === 'win32') {
-      // Windows PowerShell: comprehensive query
-      const cmd = `powershell -NoProfile -NonInteractive -Command "
-        try {
-          $printers = Get-CimInstance Win32_Printer | Select-Object Name, Default, PrinterStatus, PortName, DriverName, Local;
-          $printers | ConvertTo-Json -Compress;
-        } catch {
-          Get-Printer | Select-Object Name, Default, PortName, DriverName | ConvertTo-Json -Compress;
-        }
-      "`;
+      // 1. Try single-line PowerShell query
+      const psCmd = 'powershell -NoProfile -NonInteractive -Command "[Console]::OutputEncoding=[System.Text.Encoding]::UTF8; (Get-CimInstance Win32_Printer).Name"';
 
-      exec(cmd, { timeout: 6000 }, (error, stdout) => {
-        if (error || !stdout.trim()) {
-          return resolve(getFallbackPrinters());
+      exec(psCmd, { timeout: 6000 }, (error, stdout) => {
+        let names = [];
+        if (!error && stdout && stdout.trim()) {
+          names = stdout.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
         }
-        try {
-          const data = JSON.parse(stdout);
-          const list = Array.isArray(data) ? data : [data];
-          const printers = list.map((p) => ({
-            name: p.Name,
-            isDefault: Boolean(p.Default),
-            port: p.PortName || 'USB/Local',
-            driver: p.DriverName || '',
-            status: p.PrinterStatus === 3 ? 'idle' : 'ready',
-            type: 'windows-spooler',
-            isLocal: p.Local !== false
-          }));
-          resolve(printers.length > 0 ? printers : getFallbackPrinters());
-        } catch {
-          resolve(getFallbackPrinters());
+
+        if (names.length > 0) {
+          return resolve(formatPrinterList(names));
         }
+
+        // 2. Fallback to wmic
+        exec('wmic printer get name', { timeout: 5000 }, (wmicErr, wmicOut) => {
+          if (!wmicErr && wmicOut && wmicOut.trim()) {
+            names = wmicOut
+              .split(/\r?\n/)
+              .map((s) => s.trim())
+              .filter((s) => s && s.toLowerCase() !== 'name');
+          }
+
+          if (names.length > 0) {
+            return resolve(formatPrinterList(names));
+          }
+
+          // 3. Fallback to Get-Printer
+          exec('powershell -NoProfile -NonInteractive -Command "(Get-Printer).Name"', { timeout: 5000 }, (p2Err, p2Out) => {
+            if (!p2Err && p2Out && p2Out.trim()) {
+              names = p2Out.split(/\r?\n/).map((s) => s.trim()).filter(Boolean);
+            }
+            resolve(formatPrinterList(names));
+          });
+        });
       });
     } else {
       // macOS & Linux CUPS query
@@ -114,6 +118,30 @@ function getSystemPrinters() {
       });
     }
   });
+}
+
+function formatPrinterList(names) {
+  const uniqueNames = Array.from(new Set(names.map((n) => n.trim()).filter(Boolean)));
+  if (uniqueNames.length === 0) {
+    return getFallbackPrinters();
+  }
+  const list = uniqueNames.map((name, idx) => ({
+    name: name,
+    isDefault: idx === 0,
+    port: 'USB/Local',
+    driver: '',
+    status: 'ready',
+    type: 'windows-spooler',
+    isLocal: true
+  }));
+  list.push({
+    name: 'Virtual_Barcode_Printer',
+    isDefault: false,
+    port: 'Virtual Memory Port',
+    status: 'ready',
+    type: 'virtual'
+  });
+  return list;
 }
 
 function getFallbackPrinters() {
