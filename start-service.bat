@@ -7,13 +7,13 @@ echo        SEHATLINK AUTO-PRINT SERVICE (PORT 18181)
 echo ========================================================
 echo.
 
-if not exist "node_modules" (
-    echo [INFO] Memasang dependensi service untuk pertama kali...
+if not exist "node_modules\pdf-to-printer" (
+    echo [INFO] Memeriksa dan memasang dependensi service...
     echo Mohon tunggu 5-10 detik...
     echo.
     call npm install --omit=dev
     echo.
-    echo [INFO] Dependensi berhasil dipasang!
+    echo [INFO] Dependensi berhasil disiapkan!
     echo.
 )
 

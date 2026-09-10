@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "========================================================"
-echo "       SEHATLINK AUTO-PRINT SERVICE (PORT 8181)"
+echo "       SEHATLINK AUTO-PRINT SERVICE (PORT 18181)"
 echo "========================================================"
 echo ""
 
@@ -21,5 +21,5 @@ if [ ! -d "node_modules" ]; then
     echo ""
 fi
 
-echo "[INFO] Menjalankan service auto-print pada port 8181..."
+echo "[INFO] Menjalankan service auto-print pada port 18181..."
 npm start
